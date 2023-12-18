@@ -11,37 +11,25 @@ public class TextEditor extends JFrame implements ActionListener {
     private final int WINDOW_H = Settings.WINDOW_H;
     private final int WINDOW_W = Settings.WINDOW_W;
 
-    private String fontFamily = Settings.DEFAULT_FONT_FAMILY;
-    private int fontSize = Settings.DEFAULT_FONT_SIZE;
-    private int fontStyle = Settings.DEFAULT_FONT_STYLE;
+    FontBar fontBar;
+    String fontFamily = Settings.DEFAULT_FONT_FAMILY;
+    int fontSize = Settings.DEFAULT_FONT_SIZE;
+    int fontStyle = Settings.DEFAULT_FONT_STYLE;
 
-    private JTextArea textArea;
+    JTextArea textArea;
     private JScrollPane scrollPane;
 
-    private JSpinner fontSizeSpinner;
-    private JSpinner familySizeSpinner;
-    //private JSpinner fontSizeSpinner;
 
-    private JComboBox fontFamilyPicker;
-
-    private JLabel fontSizeLabel;
-
-    private JButton fontColorButton;
 
     public TextEditor(){
+
         initWindow();
         initTextArea();
         initScrollPane();
-        initFontSizeSpinner();
-        initFontSizeLabel();
-        //initFamilySizeSpinner();
-        initFontColorButton();
-        initFontFamilyPicker();
+        fontBar = new FontBar(this);
 
-        this.add(fontSizeLabel);
-        this.add(fontSizeSpinner);
-        this.add(fontColorButton);
-        this.add(fontFamilyPicker);
+
+        this.add(fontBar);
         //this.add(familySizeSpinner);
         this.add(scrollPane);
         this.setVisible(true);
@@ -49,14 +37,16 @@ public class TextEditor extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource()==fontColorButton){
+        if (fontBar == null)
+            return;
+        if (e.getSource()==fontBar.fontColorButton){
             JColorChooser colorChooser = new JColorChooser();
             Color color = JColorChooser.showDialog(null, "Choose a color", Color.black);
             textArea.setForeground(color);
         }
-        if (e.getSource()==fontFamilyPicker){
+        if (e.getSource()==fontBar.fontFamilyPicker){
             textArea.setFont(new Font(
-                    (String) fontFamilyPicker.getSelectedItem(),
+                    (String) fontBar.fontFamilyPicker.getSelectedItem(),
                     fontStyle, fontSize));
         }
     }
@@ -87,56 +77,5 @@ public class TextEditor extends JFrame implements ActionListener {
 
     }
 
-    private void initFontSizeSpinner(){
-        fontSizeSpinner = new JSpinner();
-        fontSizeSpinner.setPreferredSize(
-                new Dimension(50, 50));
-        fontSizeSpinner.setValue(fontSize);
-        fontSizeSpinner.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                fontSize = (int) fontSizeSpinner.getValue();
-                textArea.setFont(new Font(
-                        textArea.getFont().getFamily(),
-                        textArea.getFont().getStyle(),
-                        fontSize));
-            }
-        });
-    }
 
-    private void initFamilySizeSpinner(){
-        familySizeSpinner = new JSpinner();
-        fontSizeSpinner.setPreferredSize(
-                new Dimension(50, 50));
-        fontSizeSpinner.setValue(0);
-        fontSizeSpinner.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                textArea.setFont(new Font(
-                        (String) familySizeSpinner.getValue(),
-                        textArea.getFont().getStyle(),
-                        (int) textArea.getFont().getSize()));
-            }
-        });
-    }
-
-    private void initFontSizeLabel(){
-        fontSizeLabel = new JLabel("Font: ");
-    }
-
-    private void initFontColorButton(){
-        fontColorButton = new JButton("Color");
-        fontColorButton.addActionListener(this);
-    }
-
-    private void initFontFamilyPicker(){
-        String[] availableFamilies = GraphicsEnvironment.
-                getLocalGraphicsEnvironment().
-                getAvailableFontFamilyNames();
-        fontFamilyPicker = new JComboBox(availableFamilies);
-        //You can add this since you have the ActionListener implenented in this class
-        //If create in another class you should pass this class as reference
-        fontFamilyPicker.addActionListener(this);
-        fontFamilyPicker.setSelectedItem(Settings.DEFAULT_FONT_FAMILY);
-    }
 }
